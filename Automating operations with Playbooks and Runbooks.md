@@ -14,9 +14,9 @@ In contrast, implementing automation in these activities has the following benef
 
 At a glance, both **runbooks** and **playbooks** appear to be similar documents that technical users, can use to perform operational activities. However, there an essential difference between them:
 
-- A [playbook](https://wa.aws.amazon.com/wat.concept.playbook.en.html)  documents contain processes that guides you through activities to investigate an issue. For example, gathering applicable information, identifying potential sources of failure, isolating faults, or determining the root cause of issues. Playbooks can follow multiple paths and yield more than one outcome.
+- A [playbook (broken link](https://wa.aws.amazon.com/wat.concept.playbook.en.html)  documents contain processes that guides you through activities to investigate an issue. For example, gathering applicable information, identifying potential sources of failure, isolating faults, or determining the root cause of issues. Playbooks can follow multiple paths and yield more than one outcome.
 
-- A [runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) contains procedures necessary to achieve a specific outcome. For example, creating a user, rolling back configuration, or scaling resource to resolve the issue identified.
+- A [runbook (broken link](https://wa.aws.amazon.com/wat.concept.runbook.en.html) contains procedures necessary to achieve a specific outcome. For example, creating a user, rolling back configuration, or scaling resource to resolve the issue identified.
 
 This hands-on lab will guide you through the steps to automate your operational activities using runbooks and playbooks built with AWS tools.
 
