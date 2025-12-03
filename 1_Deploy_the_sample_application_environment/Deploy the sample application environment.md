@@ -63,7 +63,7 @@ bash ./build_application.sh <region> <accountid> <sysops@domain.com> <owner@doma
 
 
 ## 1.2. Confirm the application status.
-Once the application is successfully deployed, go to your [CloudFormation](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2) console  and locate the stack named `walab-ops-sample-application`.
+Once the application is successfully deployed, go to your [CloudFormation console](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2) and locate the stack named `walab-ops-sample-application`.
 
 1. Confirm that the stack is in a 'CREATE_COMPLETE' state.
 2. Record the following output details as it will be required later:
