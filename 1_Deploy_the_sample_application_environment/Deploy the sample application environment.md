@@ -65,9 +65,9 @@ bash ./build_application.sh <region> <accountid> <sysops@domain.com> <owner@doma
 ## 1.2. Confirm the application status.
 Once the application is successfully deployed, go to your [CloudFormation console](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2) and locate the stack named `walab-ops-sample-application`.
 
-1. Confirm that the stack is in a 'CREATE_COMPLETE' state.
+1. Confirm that the stack is in a **'CREATE_COMPLETE'** state.
 2. Record the following output details as it will be required later:
-3. Take note of the DNS value specified under OutputApplicationEndpoint of the Outputs.
+3. Take note of the DNS value specified under **OutputApplicationEndpoint** of the Outputs.
 
 The screenshot below shows the output from the CloudFormation stack:
 
@@ -75,14 +75,16 @@ The screenshot below shows the output from the CloudFormation stack:
 ![Section2 DNS Output](/1_Deploy_the_sample_application_environment/section2-dns-outputs.png)
 
 
-Check for an email sent to the system operator and owner addresses you've specified in the build_application.sh script. This email should also be visible in the CloudFormation parameter under in the SystemOpsNotificationEmail and SystemOwnerNotificationEmail.
+4. Check for an email sent to the system operator and owner addresses you've specified in the build_application.sh script. This email should also be visible in the CloudFormation parameter under in the **SystemOpsNotificationEmail** and **SystemOwnerNotificationEmail**.
 
-Choose confirm subscription on the email links to subscribe.
+5. Choose `confirm subscription` on the email links to subscribe.
 
-Section2 DNS Output
 
-There will be 2 emails sent to your address, please ensure to subscribe to both of them.
-1.3. Test the application.
+![Section2 DNS Output](/1_Deploy_the_sample_application_environment/section2-email-confirm.png)
+> [!NOTE]
+> There will be 2 emails sent to your address, please ensure to subscribe to both of them.
+
+## 1.3. Test the application.
 In this section, you will be testing the encrypt API action from the deployed application.
 
 The application will take a JSON payload with Name as the identifier and Text key as the value of the secret message.
@@ -92,25 +94,28 @@ The application will encrypt the value under Text key with a designated KMS key 
 > Note: For simplicity purposes the sample application will re-use the same KMS keys for each record generated.
 
 1. In the **CloudShell** terminal, run the commands below, replacing the <ApplicationEndpoint> with the OutputApplicationEndpoint from previous step. This command will run curl  to send a POST request with the secret message payload {"Name":"Bob","Text":"Run your operations as code"} to the API.
+
 ```
 ALBEndpoint="<ApplicationEndpoint>"
 ```
-1
+```
 curl --header "Content-Type: application/json" --request POST --data '{"Name":"Bob","Text":"Run your operations as code"}' $ALBEndpoint/encrypt
+```
 
-Once you run the previous command, you should see output as follows:
+2. Once you run the previous command, you should see output as follows:
 ```
 {"Message":"Data encrypted and stored, keep your key save","Key":"EncryptKey"}
 ```
 
-Take note of the encrypt key value under **Key**.
+3. Take note of the encrypt key value under **Key**.
 
-Run the command below, pasting the encrypt key you took note of previously under the **Key** section to test the decrypt API.
+4. Run the command below, pasting the encrypt key you took note of previously under the **Key** section to test the decrypt API.
 
 ```
 curl --header "Content-Type: application/json" --request GET --data '{"Name":"Bob","Key":"EncryptKey"}' $ALBEndpoint/decrypt
 ```
-Once you run the command you should see the following output:
+
+5. Once you run the command you should see the following output:
 ```
 {"Text":"Run your operations as code"}
 ```
