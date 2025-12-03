@@ -6,7 +6,7 @@ In this section of the lab, you will simulate a performance issue within the API
 
 In this example, should the API take longer than 6 seconds to respond, an alert will be created, triggering a notification email.
 
-## Actions items in this section:
+### Actions items in this section:
 1. You will run a script that will send a large amount of traffic to the API.
 2. You will observe and confirm the issue through AWS monitoring tools.
 

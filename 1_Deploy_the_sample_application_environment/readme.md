@@ -17,7 +17,7 @@ Explore the contents of the CloudFormation script to learn more about the enviro
 
 You will use this sample application as a sandbox to simulate an application performance issue, start your **runbooks** and **playbooks** to autonomously investigate and remediate.
 
-## Actions items in this section:
+### Actions items in this section:
 
 1. You will use [CloudShell](https://aws.amazon.com/cloudshell/)  to run a script to build the sample application as shown in the diagram below.
 
