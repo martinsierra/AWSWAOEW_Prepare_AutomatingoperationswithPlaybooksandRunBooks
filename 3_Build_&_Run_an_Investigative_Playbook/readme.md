@@ -102,6 +102,7 @@ Example:
 ```
 **Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
 3. Confirm that the stack has installed correctly. You can do this by running the **describe-stacks** command below, locate the **StackStatus** and confirm it is set to **CREATE_COMPLETE**.
+
 ```
 aws cloudformation describe-stacks --stack-name waopslab-playbook-gather-resources
 ```
@@ -110,160 +111,22 @@ aws cloudformation describe-stacks --stack-name waopslab-playbook-gather-resourc
 <details>
 <summmary>Click here for Console step-by-step</summary>
 1. Go to the AWS Systems Manager console. Click **Documents** under **Shared Resources** on the left menu. Then click **Create Automation** as show in the screen shot below:
-[Section4]()
+![Section4]()
 
 2. Enter `Playbook-Gather-Resources` in the **Name** field and copy the notes shown below into the **Document description** field.
-| What does this playbook do?
-| Query the CloudWatch Synthetics Canary and look for all resources related to the application based on it's |Application Tag. This playbook takes an input of the CloudWatch Alarm ARN triggered by the canary
-|
-|**Note:** Application resources must be deployed using CloudFormation and properly tagged accordingly.
-|
-|**Actions taken in this playbook.**
-|1. Describe CloudWatch Alarm ARN and identify the Canary resource.
-| 2. Describe the Canary resource to gather the value of 'Application' tag
-|3. Gather CloudFormation Stack with the same value of 'Application' tag.
-|4. List all resources in CloudFormation Stack.
-| 5. Parse list of resources into String Output.
 
-3. In the Assume role field, enter the IAM role ARN we created in the previous section 3.0 Prepare Automation Document IAM Role.
-Section4 
+What does this playbook do?
+Query the CloudWatch Synthetics Canary and look for all resources related to the application based on it's |Application Tag. This playbook takes an input of the CloudWatch Alarm ARN triggered by the canary
+**Note:** Application resources must be deployed using CloudFormation and properly tagged accordingly.
 
-Expand the Input Parameters section and enter AlarmARN as the Parameter name. Set the type as String and Required as Yes. This will define a Parameter within our playbook, so that the value of the CloudWatch Alarm ARN can be passed into the playbook to run the action.
-Section4 
-
-Under Step 1 section specify Gather_Resources_For_Alarm Step name, select aws::executeScript as the Action type.
-
-Under Inputs set Python3.11 as the Runtime and specify script_handler as the Handler.
-
-Paste in below python codes into the Script section.
-
-Section4 
-
-```
-    import json
-    import re
-    from datetime import datetime
-    import boto3
-    import os
-
-    def arn_deconstruct(arn):
-    arnlist = arn.split(":")
-    service=arnlist[2]
-    region=arnlist[3]
-    accountid=arnlist[4]
-    servicetype=arnlist[5]
-    name=arnlist[6]
-    return {
-      "Service": service,
-      "Region": region,
-      "AccountId": accountid,
-      "Type": servicetype,
-      "Name": name
-    }
-
-    def locate_alarm_source(alarm):
-    cwclient = boto3.client('cloudwatch', region_name = alarm['Region'] )
-    alarm_source = {}
-    alarm_detail = cwclient.describe_alarms(AlarmNames=[alarm['Name']])  
-
-    if len(alarm_detail['MetricAlarms']) > 0:
-      metric_alarm = alarm_detail['MetricAlarms'][0]
-      namespace = metric_alarm['Namespace']
-      
-      # Condition if NameSpace is CloudWatch Syntetics
-      if namespace == 'CloudWatchSynthetics':
-        if 'Dimensions' in metric_alarm:
-          dimensions = metric_alarm['Dimensions']
-          for i in dimensions:
-            if i['Name'] == 'CanaryName':
-              source_name = i['Value']
-              alarm_source['Type'] = namespace
-              alarm_source['Name'] = source_name
-              alarm_source['Region'] = alarm['Region']
-              alarm_source['AccountId'] = alarm['AccountId']
-
-      result = alarm_source
-      return result
-
-    def locate_canary_endpoint(canaryname,region):
-    result = None
-    synclient = boto3.client('synthetics', region_name = region )
-    res = synclient.get_canary(Name=canaryname)
-    canary = res['Canary']
-    if 'Tags' in canary:
-      if 'TargetEndpoint' in canary['Tags']:
-        target_endpoint = canary['Tags']['TargetEndpoint']
-        result = target_endpoint
-    return result
+**Actions taken in this playbook.**
+1. Describe CloudWatch Alarm ARN and identify the Canary resource.
+2. Describe the Canary resource to gather the value of 'Application' tag
+3. Gather CloudFormation Stack with the same value of 'Application' tag.
+4. List all resources in CloudFormation Stack.
+5. Parse list of resources into String Output.
 
 
-    def locate_app_tag_value(resource):
-    result = None
-    if resource['Type'] == 'CloudWatchSynthetics':
-      synclient = boto3.client('synthetics', region_name = resource['Region'] )
-      res = synclient.get_canary(Name=resource['Name'])
-      canary = res['Canary']
-      if 'Tags' in canary:
-        if 'Application' in canary['Tags']:
-          apptag_val = canary['Tags']['Application']
-          result = apptag_val
-    return result
-
-    def locate_app_resources_by_tag(tag,region):
-    result = None
-
-    # Search CloufFormation Stacks for tag
-    cfnclient = boto3.client('cloudformation', region_name = region )
-    list = cfnclient.list_stacks(StackStatusFilter=['CREATE_COMPLETE','ROLLBACK_COMPLETE','UPDATE_COMPLETE','UPDATE_ROLLBACK_COMPLETE','IMPORT_COMPLETE','IMPORT_ROLLBACK_COMPLETE']  )
-    for stack in list['StackSummaries']:
-      app_resources_list = []
-      stack_name = stack['StackName']
-      stack_details = cfnclient.describe_stacks(StackName=stack_name)
-      stack_info = stack_details['Stacks'][0]
-      if 'Tags' in stack_info:
-        for t in stack_info['Tags']:
-          if t['Key'] == 'Application' and t['Value'] == tag:
-            app_stack_name = stack_info['StackName']
-            app_resources = cfnclient.describe_stack_resources(StackName=app_stack_name)
-            for resource in app_resources['StackResources']:
-              app_resources_list.append(
-                { 
-                  'PhysicalResourceId' : resource['PhysicalResourceId'],
-                  'Type': resource['ResourceType']
-                }
-              )
-            result =  app_resources_list
-
-    return result
-    def script_handler(event, context):
-    result = {}
-    arn = event['CloudWatchAlarmARN']
-    alarm = arn_deconstruct(arn)
-    # Locate tag from CloudWatch Alarm
-
-    alarm_source = locate_alarm_source(alarm) # Identify Alarm Source
-    tag_value = locate_app_tag_value(alarm_source) #Identify tag from source
-
-    if alarm_source['Type'] == 'CloudWatchSynthetics':
-      endpoint = locate_canary_endpoint(alarm_source['Name'],alarm_source['Region'])
-      result['CanaryEndpoint'] = endpoint
-      
-    # Locate cloudformation with tag
-    resources = locate_app_resources_by_tag(tag_value,alarm['Region'])
-    result['ApplicationStackResources'] = json.dumps(resources) 
-
-    return result
-```
-
-Under Additional inputs specify the input value to the step, passing in the parameter we created previously. To do this, specify below values:
-InputPayload as the Input name
-CloudWatchAlarmARN: '{{AlarmARN}}' as the Input Value.
-Under Outputs specify below values:
-Resources as Name
-$.Payload.ApplicationStackResources as Selector
-String as Type
-Once your settings match the screenshot below, choose Create Automation
-Section4 
 
 </details>
 Once the automation document is created, you can now give it a test.
