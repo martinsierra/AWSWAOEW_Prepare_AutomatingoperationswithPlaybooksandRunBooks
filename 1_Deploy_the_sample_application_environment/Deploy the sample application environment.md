@@ -23,30 +23,31 @@ You will use this sample application as a sandbox to simulate an application per
 
     ![Section1 App Arch](/1_Deploy_the_sample_application_environment/section2-base-application.png)
 
-1.0 Build baseline application.
+## 1.0 Build baseline application.
 In this first step, you will provision the baseline application stack that consists of a sample application along with its underlying resources. This stack will be deployed via the AWS CloudShell environment. Follow the steps below to proceed.
 
-From the main console, access the AWS CloudShell service.
+1. From the main console, access the AWS CloudShell service.
 
-Once your CloudShell environment is established. You should see a terminal output as per below:
+2. Once your CloudShell environment is established. You should see a terminal output as per below:
 
-Section1 shell
+    ![Section1 shell](/1_Deploy_the_sample_application_environment/section1-cloudshell.png)
 
-Download the script by running below commands.
-1
-2
-3
-4
+3. Download the script by running below commands.
+
+```
 wget https://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee.s3.us-east-1.amazonaws.com/6d753373-da0f-46a6-8195-4f001e507961/pack.zip
 
 unzip pack.zip
 cd ~/scripts
+```
+4. Copy and paste the command below, replacing <region> and <accountid> with your current region and account ID. Replace <sysops@domain.com> with the email address representing the system operators team, and <owner@domain.com> with the email address representing the business owner.
 
-Copy and paste the command below, replacing <region> and <accountid> with your current region and account ID. Replace <sysops@domain.com> with the email address representing the system operators team, and <owner@domain.com> with the email address representing the business owner.
-1
+```
 bash ./build_application.sh <region> <accountid> <sysops@domain.com> <owner@domain.com>
+```
 
-The build_application.sh script will build and deploy your sample application, along with the architecture that hosts it. The application architecture will have capabilities to notify systems operators and owners, leveraging Amazon Simple Notification Service . You can use the same email address for sysops@domain.com and owner@domain.com if you need to, but ensure that you have both values specified.
+> [!NOTE]
+>The build_application.sh script will build and deploy your sample application, along with the architecture that hosts it. The application architecture will have capabilities to notify systems operators and owners, leveraging Amazon Simple Notification Service . You can use the same email address for sysops@domain.com and owner@domain.com if you need to, but ensure that you have both values specified.
 
 If you have deployed Amazon ECS before in your account, you may encounter InvalidInput error with message "AWSServiceRoleForECS has been taken" while running the build_application.sh script. You can safely ignore this message, as the script will continue despite the error.
 
