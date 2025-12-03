@@ -70,6 +70,7 @@ Codifying your **playbook** with AWS Systems Manager allows for maximum code reu
 
 > [!NOTE]
 > Note: Follow these step to build and run playbook. Select a guide to deploy using either the AWS console, the AWS CLI or via a CloudFormation template deployment.
+
 <details>
 <summmary>Click here for CloudFormation Console deployment step</summary>
 Download the template [here(page not found)](https://catalog.workshops.aws/well-architected-operational-excellence/en-US/operations/200-automating-operations-with-playbooks-and-runbooks/code/templates/playbook-gather-resources-yml).
