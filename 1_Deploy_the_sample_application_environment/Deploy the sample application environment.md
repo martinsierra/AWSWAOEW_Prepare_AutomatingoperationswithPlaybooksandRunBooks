@@ -21,7 +21,7 @@ You will use this sample application as a sandbox to simulate an application per
 
 1. You will use [CloudShell](https://aws.amazon.com/cloudshell/)  to run a script to build the sample application as shown in the diagram below.
 
-    [Section1 App Arch](1_Deploy_the_sample_application_environment/section2-base-application.png)
+    ![Section1 App Arch](1_Deploy_the_sample_application_environment/section2-base-application.png)
 
 1.0 Build baseline application.
 In this first step, you will provision the baseline application stack that consists of a sample application along with its underlying resources. This stack will be deployed via the AWS CloudShell environment. Follow the steps below to proceed.
