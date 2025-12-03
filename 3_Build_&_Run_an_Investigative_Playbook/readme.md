@@ -80,6 +80,7 @@ If you decide to deploy the stack from the console, ensure that you follow below
 1. [CloudFormation create stack documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html)  on how to deploy the CloudFormation template.
 2. Use `waopslab-playbook-gather-resources` as the **Stack Name**, as this is referenced by other stacks later in the lab.
 </details>
+
 <details>
 <summmary>Click here for CloudFormation CLI deployment step</summary>
 **Note:** To deploy from the command line, ensure that you have installed and configured AWS CLI with the appropriate credentials.
