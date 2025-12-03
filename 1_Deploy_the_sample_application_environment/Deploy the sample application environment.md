@@ -47,26 +47,34 @@ bash ./build_application.sh <region> <accountid> <sysops@domain.com> <owner@doma
 ```
 
 > [!NOTE]
->The build_application.sh script will build and deploy your sample application, along with the architecture that hosts it. The application architecture will have capabilities to notify systems operators and owners, leveraging Amazon Simple Notification Service . You can use the same email address for sysops@domain.com and owner@domain.com if you need to, but ensure that you have both values specified.
+> The build_application.sh script will build and deploy your sample application, along with the architecture that hosts it. The application architecture will have capabilities to notify systems operators and owners, leveraging Amazon Simple Notification Service . You can use the same email address for sysops@domain.com and owner@domain.com if you need to, but ensure that you have both values specified.
 
-If you have deployed Amazon ECS before in your account, you may encounter InvalidInput error with message "AWSServiceRoleForECS has been taken" while running the build_application.sh script. You can safely ignore this message, as the script will continue despite the error.
+> If you have deployed Amazon ECS before in your account, you may encounter InvalidInput error with message "AWSServiceRoleForECS has been taken" while running the build_application.sh script. You can safely ignore this message, as the script will continue despite the error.
 
-The above command runs the build and provisioning of the application stack. The script should take about 20 mins to finish.
-Section 2 Cloud9 IDE Welcome Screen
+5. The above command runs the build and provisioning of the application stack. The script should take about 20 mins to finish.
 
-The build_application.sh will deploy the application docker image and push it to Amazon ECR . This is used by Amazon ECS.  Once the build script completes, another CloudFormation stack containing the application resources (ECS, RDS, ALB, and others) will be deployed.
-In the CloudFormation console, you should see a new stack being deployed called walab-ops-sample-application. Wait until the stack reaches CREATE_COMPLETE state and proceed to the next step.
-Section 2 CreateComplete
+    ![Section 2 Cloud9 IDE Welcome Screen](/1_Deploy_the_sample_application_environment/section2-base-app-build.png)
 
-1.2. Confirm the application status.
-Once the application is successfully deployed, go to your CloudFormation console  and locate the stack named walab-ops-sample-application.
+> [!NOTE]
+> The build_application.sh will deploy the application docker image and push it to [Amazon ECR](https://aws.amazon.com/ecr/) . This is used by [Amazon ECS](https://aws.amazon.com/ecs/).  Once the build script completes, another CloudFormation stack containing the application resources (ECS, RDS, ALB, and others) will be deployed.
 
-Confirm that the stack is in a 'CREATE_COMPLETE' state.
-Record the following output details as it will be required later:
-Take note of the DNS value specified under OutputApplicationEndpoint of the Outputs.
+6. In the CloudFormation console, you should see a new stack being deployed called `walab-ops-sample-application`. Wait until the stack reaches **CREATE_COMPLETE** state and proceed to the next step.
+
+![Section 2 CreateComplete](/1_Deploy_the_sample_application_environment/section2-base-app-create-complete.png)
+
+
+## 1.2. Confirm the application status.
+Once the application is successfully deployed, go to your [CloudFormation](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2) console  and locate the stack named `walab-ops-sample-application`.
+
+1. Confirm that the stack is in a 'CREATE_COMPLETE' state.
+2. Record the following output details as it will be required later:
+3. Take note of the DNS value specified under OutputApplicationEndpoint of the Outputs.
+
 The screenshot below shows the output from the CloudFormation stack:
 
-Section2 DNS Output
+
+![Section2 DNS Output](/1_Deploy_the_sample_application_environment/section2-dns-outputs.png)
+
 
 Check for an email sent to the system operator and owner addresses you've specified in the build_application.sh script. This email should also be visible in the CloudFormation parameter under in the SystemOpsNotificationEmail and SystemOwnerNotificationEmail.
 
@@ -81,33 +89,36 @@ In this section, you will be testing the encrypt API action from the deployed ap
 The application will take a JSON payload with Name as the identifier and Text key as the value of the secret message.
 
 The application will encrypt the value under Text key with a designated KMS key and store the encrypted text in the RDS database with Name as the primary key.
+> [!NOTE]
+> Note: For simplicity purposes the sample application will re-use the same KMS keys for each record generated.
 
-Note: For simplicity purposes the sample application will re-use the same KMS keys for each record generated.
-In the CloudShell terminal, run the commands below, replacing the <ApplicationEndpoint> with the OutputApplicationEndpoint from previous step. This command will run curl  to send a POST request with the secret message payload {"Name":"Bob","Text":"Run your operations as code"} to the API.
-1
+1. In the **CloudShell** terminal, run the commands below, replacing the <ApplicationEndpoint> with the OutputApplicationEndpoint from previous step. This command will run curl  to send a POST request with the secret message payload {"Name":"Bob","Text":"Run your operations as code"} to the API.
+```
 ALBEndpoint="<ApplicationEndpoint>"
-
+```
 1
 curl --header "Content-Type: application/json" --request POST --data '{"Name":"Bob","Text":"Run your operations as code"}' $ALBEndpoint/encrypt
 
 Once you run the previous command, you should see output as follows:
-1
+```
 {"Message":"Data encrypted and stored, keep your key save","Key":"EncryptKey"}
+```
 
-Take note of the encrypt key value under Key .
+Take note of the encrypt key value under **Key**.
 
-Run the command below, pasting the encrypt key you took note of previously under the Key section to test the decrypt API.
+Run the command below, pasting the encrypt key you took note of previously under the **Key** section to test the decrypt API.
 
-1
+```
 curl --header "Content-Type: application/json" --request GET --data '{"Name":"Bob","Key":"EncryptKey"}' $ALBEndpoint/decrypt
-
+```
 Once you run the command you should see the following output:
-1
+```
 {"Text":"Run your operations as code"}
+```
 
-Congratulations!
+## Congratulations!
 You have now completed the first section of the Lab.
 
 You should have a sample application API which we will use for the remainder of the lab.
 
-Choose Next Step to continue to the next section.
+Choose **Next Step** to continue to the next section.
